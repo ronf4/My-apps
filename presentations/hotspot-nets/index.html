@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NETS Wi‑Fi Hot Spot</title>
 <meta name="description" content="Реклама на платформе бесплатного Wi‑Fi: 9 ресторанов KFC и ТЦ Siema Mall">
+<script>document.documentElement.className+=" js"</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -183,6 +184,14 @@ h1 .red .w>span{background:linear-gradient(90deg,var(--red),#ffb199,var(--red));
 .ok.on .okc{transform:scale(1);animation:ping 1.8s infinite .8s}
 @media (max-width:760px){.wifi{right:-14vw;top:auto;bottom:14vh;transform:none;width:62vw;opacity:.35}.glow{display:none}}
 @media (prefers-reduced-motion:reduce){.w>span{transform:none!important}}
+
+/* fallback: viewers without JavaScript show slides one under another */
+html:not(.js),html:not(.js) body{overflow:auto;height:auto}
+html:not(.js) .deck{position:static}
+html:not(.js) .slide{position:relative;opacity:1;transform:none;filter:none;pointer-events:auto;min-height:100vh;padding-bottom:60px}
+html:not(.js) .r,html:not(.js) .place{opacity:1;transform:none}
+html:not(.js) .nav,html:not(.js) .progress,html:not(.js) .glow,html:not(.js) #chart,html:not(.js) #seg{display:none}
+html:not(.js) .phone img:first-child{opacity:1;transform:none}
 </style>
 </head>
 <body>
@@ -268,9 +277,9 @@ h1 .red .w>span{background:linear-gradient(90deg,var(--red),#ffb199,var(--red));
       <div class="kicker r">Статистика</div>
       <h2 class="r">Цифры платформы с&nbsp;момента запуска 10.07.2025</h2>
       <div class="grid g3 r">
-        <div class="card"><div class="num" data-count="31752">0</div><div class="num-l">зарегистрированных аккаунтов</div><div class="bar-u"><i style="--w:56%"></i></div></div>
-        <div class="card"><div class="num" data-count="47291">0</div><div class="num-l">просмотров рекламы</div><div class="bar-u"><i style="--w:83%"></i></div></div>
-        <div class="card"><div class="num" data-count="57128">0</div><div class="num-l">переходов по рекламе</div><div class="bar-u"><i style="--w:100%"></i></div></div>
+        <div class="card"><div class="num" data-count="31752">31 752</div><div class="num-l">зарегистрированных аккаунтов</div><div class="bar-u"><i style="--w:56%"></i></div></div>
+        <div class="card"><div class="num" data-count="47291">47 291</div><div class="num-l">просмотров рекламы</div><div class="bar-u"><i style="--w:83%"></i></div></div>
+        <div class="card"><div class="num" data-count="57128">57 128</div><div class="num-l">переходов по рекламе</div><div class="bar-u"><i style="--w:100%"></i></div></div>
       </div>
       <p class="note r">Каждый день: <b style="color:var(--text)">90–120</b> новых аккаунтов и <b style="color:var(--text)">360–960</b> входов.</p>
     </div>
