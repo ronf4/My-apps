@@ -11,7 +11,7 @@
   --text:#0b0b0b; --text-2:#52514e; --muted:#7a7974;
   --line:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
   --s1:#2a78d6; --s2:#eb6834; --accent:#2a78d6;
-  --good:#0ca30c; --good-text:#006300; --warn:#fab219; --warn-text:#8a5a00; --crit:#d03b3b; --crit-text:#b02a2a;
+  --good:#0ca30c; --near:#7cc47c; --good-text:#006300; --warn:#fab219; --warn-text:#8a5a00; --crit:#d03b3b; --crit-text:#b02a2a;
   --crit-bg:#fdecec;
 }
 @media (prefers-color-scheme: dark){
@@ -62,7 +62,8 @@ button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:1px 7px;border-radius:999px;white-space:nowrap}
 .b-crit{background:var(--crit-bg);color:var(--crit-text)}
 .b-warn{color:var(--warn-text);border:1px solid var(--warn)}
-.b-good{color:var(--good-text);border:1px solid var(--good)}
+.b-near{color:var(--good-text);border:1px dashed var(--good)}
+.b-good{background:var(--good);color:#fff}
 .tablebox{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 th,td{padding:7px 9px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
@@ -104,13 +105,13 @@ document.documentElement.classList.add('js');
 'use strict';
 /* ====== Справочники (демо) ====== */
 var LV=['РТ','РМ','М','ТП','Контрагент'];
-var LVF=['Руководитель территории','Региональный менеджер','Менеджер','Торговый представитель','Контрагент'];
-var REG=['Ташкент','Самарканд','Фергана','Андижан','Бухара','Наманган','Кашкадарья'];
-var FM=['Азиз','Бахтиёр','Дилшод','Жасур','Шерзод','Отабек','Улугбек','Санжар','Сардор','Тимур','Алексей','Рустам','Фарход','Ойбек','Анвар','Жахонгир','Бобур','Акмал'];
-var FF=['Нодира','Малика','Гулнора','Дильноза','Феруза','Ирина','Елена','Камола','Зарина','Шахноза','Севара','Наргиза'];
-var LN=['Каримов','Рахимов','Юсупов','Алиев','Назаров','Турсунов','Исмоилов','Хасанов','Абдуллаев','Мирзаев','Садыков','Ахмедов','Усманов','Петров','Ким','Шарипов','Эргашев','Холматов','Тошматов','Мухаммедов'];
-var PH=['Шифо','Дармон','Саломат','Мадад','Фарм Плюс','Здоровье','Гиппократ','Нур','Ок Фарм','Медлайн','36,6','Вита','Дори-Дармон','Шифобахш','Мехр','Сихат','Табиб','Эко Фарм'];
-var DRUGS=[['Парацетамол 500 мг №10',4500,1.4],['Ибупрофен 400 мг №20',18000,1.1],['Амоксициллин 500 мг №16',32000,1.0],['Азитромицин 500 мг №3',38000,0.9],['Омепразол 20 мг №30',26000,0.9],['Цетиризин 10 мг №10',14000,0.6],['Метформин 850 мг №60',42000,0.8],['Аторвастатин 20 мг №30',55000,0.7],['Лозартан 50 мг №30',36000,0.7],['Витамин D3 2000 МЕ №60',68000,0.8],['Цефтриаксон 1 г фл.',12000,1.0],['Амлодипин 5 мг №30',19000,0.6]];
+var LVF=['Руководитель территории','Регион (РМ)','Подразделение (М)','Торговый представитель','Контрагент'];
+var REG=[['Душанбе',['Сино','Фирдавси','Шохмансур','Исмоили Сомони']],['НТМ',['Вахдат','Рудаки','Турсунзода','Хисор','Шахринав','Рогун']],['Согд',['Худжанд','Истаравшан','Исфара','Канибадам','Пенджикент','Гафуров']],['Бохтар',['Бохтар','Вахш','Руми','Кушониён','Шахритус']],['Куляб',['Куляб','Дангара','Восе','Фархор','Муминобод']],['Рашт',['Рашт','Таджикабад','Лахш','Нуробод']],['ГБАО',['Хорог','Ишкашим','Рушан','Шугнан']]];
+var FM=['Бахром','Комрон','Шерзод','Аличон','Аминчон','Яхё','Начиб','Сиёвуш','Рустам','Курбонали','Иномчон','Акмал','Фирдавс','Далер','Манучехр','Сухроб','Фаррух','Умед','Парвиз','Бобочон','Сайдо'];
+var FF=['Зарина','Нигина','Мадина','Шахноза','Фарзона','Мехрона','Садбарг','Тахмина'];
+var LN=['Рахмонов','Каримов','Шарипов','Назаров','Саидов','Мирзоев','Холов','Гулов','Шоев','Муродов','Бобоназаров','Хафизов','Раджабов','Мусоев','Давлатов','Курбонов','Исмоилов','Абдурахмонов','Кишваров','Сафарзода','Чабборзода','Махмадуллоев'];
+var PH=['Шифо','Дармон','Саломати','Табиб','Фарм Плюс','Сихат','Ибн Сино','Нур','Мехр','Медлайн','36,6','Вита','Дорухона','Шифобахш','Сомон','Зарафшон','Эко Фарм','Авиценна'];
+var DRUGS=[['Парацетамол 500 мг №10',3.5,1.4],['Ибупрофен 400 мг №20',14,1.1],['Амоксициллин 500 мг №16',25,1.0],['Азитромицин 500 мг №3',30,0.9],['Омепразол 20 мг №30',20,0.9],['Цетиризин 10 мг №10',11,0.6],['Метформин 850 мг №60',33,0.8],['Аторвастатин 20 мг №30',43,0.7],['Лозартан 50 мг №30',28,0.7],['Витамин D3 2000 МЕ №60',53,0.8],['Цефтриаксон 1 г фл.',9.5,1.0],['Амлодипин 5 мг №30',15,0.6]]; // цена в сомони
 var REASONS=['Дефицит товара на складе','Аптека закрыта на ремонт','Задержка оплаты — отгрузка остановлена','Конкурент дал скидку','Сезонный спад спроса','Новый ТП, принимает клиентов','Отпуск / больничный'];
 var MON=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 var MONF=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -125,19 +126,19 @@ function person(){var f=R()<0.3,ln=LN[Math.floor(R()*LN.length)];if(f&&/в$/.tes
 function add(lv,name,parent){var n={id:nodes.length,lv:lv,name:name,parent:parent,kids:[],lo:leaves.length,hi:0};nodes.push(n);if(parent!=null)nodes[parent].kids.push(n.id);return n;}
 function finish(n){n.hi=leaves.length;}
 var root=add(0,person(),null);
-REG.forEach(function(reg){
-  var rm=add(1,reg+' · '+person(),root.id);
+REG.forEach(function(rg){
+  var reg=rg[0],ds=rg[1],rm=add(1,reg+' · '+person(),root.id);
   var nm=9+Math.floor(R()*3);
   for(var a=0;a<nm;a++){
-    var m=add(2,person(),rm.id);
+    var dn=Math.floor(a/ds.length),m=add(2,reg+' '+ds[a%ds.length]+(dn?'-'+(dn+1):'')+' · '+person(),rm.id);
     var nt=6+Math.floor(R()*3);
     for(var b=0;b<nt;b++){
       var tp=add(3,person(),m.id);
-      var nk=8+Math.floor(R()*5);
+      var nk=38+Math.floor(R()*47); // в их отчёте 38–84 клиента на ТП
       for(var c=0;c<nk;c++){
         var nmk=R()<0.75?'Аптека «'+PH[Math.floor(R()*PH.length)]+'» №'+(1+Math.floor(R()*180)):'ООО «'+PH[Math.floor(R()*PH.length)]+' Фарм»';
         var k=add(4,nmk,tp.id);
-        k.base=5e6*Math.exp(2*R());k.tp=tp.id;k.m=m.id;k.li=leaves.length;
+        k.base=15e3*Math.exp(2*R());k.tp=tp.id;k.m=m.id;k.li=leaves.length; // base — сомони в месяц
         k.share=DRUGS.map(function(d){return d[2]*(0.4+R());});
         var s=k.share.reduce(function(x,y){return x+y;},0);k.share=k.share.map(function(v){return v/s;});
         leaves.push(k.id);finish(k);
@@ -173,7 +174,15 @@ function shortLabel(t,i){
 }
 function P(t,i,f){return {t:t,i:i,f:f==null?frac(t,i):f};}
 function prevP(p){return P(p.t,p.i-1,p.t===3?p.f:undefined);}
+var CMP=0; // 0 — прошлый период, 1 — год назад, 2 — два года назад
+function cmpP(p){if(CMP===0)return prevP(p);var back=[52,12,4,1][p.t]*CMP;return P(p.t,p.i-back,p.t===3?p.f:undefined);}
 
+/* ====== Курс и валюта ====== */
+var RATE26=[9.36,9.5,9.63,9.53,9.35,9.32,9.28,9.27,9.27,9.25]; // из их отчёта
+function rateAt(m){m=Math.floor(m);if(m>=24)return RATE26[Math.min(9,m-24)];return 10.9-0.06*m;} // 2024–2025 — допущение
+var CURR='USD';
+function U(){return CURR==='USD'?'тыс. $':'тыс. сомони';}
+function daysIn(p){if(p.t===0)return 7;if(p.t===1){var y=2024+Math.floor(p.i/12),m=p.i%12;return new Date(y,m+1,0).getDate();}if(p.t===2){var d=0;for(var k=0;k<3;k++)d+=daysIn({t:1,i:p.i*3+k});return d;}return Math.round((p.i===0?366:365)*p.f);}
 /* ====== Расчёт показателей ====== */
 var cache={};
 function monthPos(t,i){if(t===0){var d=wStart(i);return (d.getFullYear()-2024)*12+d.getMonth()+d.getDate()/31;}if(t===1)return i+0.5;if(t===2)return i*3+1.5;return i*12+6;}
@@ -186,8 +195,8 @@ function calc(p){
   var trend=1+0.012*mp,season=p.t===3?1:1+0.12*Math.cos(2*Math.PI*(moy-0.5)/12);
   for(var L=0;L<leaves.length;L++){
     var n=nodes[leaves[L]];
-    var plan=n.base*scale*trend*season*1.05;
-    var fact=plan*perfTP(n.tp,p.t,p.i)*perfM(n.m,p.t,p.i)*(0.8+0.4*hsh(n.id,p.t,p.i,1));
+    var plan=n.base*scale*trend*season*1.05/rateAt(mp); // план в USD, как у них
+    var fact=plan*rateAt(mp)*perfTP(n.tp,p.t,p.i)*perfM(n.m,p.t,p.i)*(0.8+0.4*hsh(n.id,p.t,p.i,1));
     var ss=0.08+0.3*hsh(n.id,p.t,p.i,2);
     var pay=fact*Math.min(1.04,0.78+0.25*hsh(n.id,p.t,p.i,3));
     var ret=fact*(0.004+0.03*hsh(n.id,p.t,p.i,4));
@@ -196,14 +205,18 @@ function calc(p){
   }
   cache[key]=o;return o;
 }
-function M(p,id){var o=calc(p);var real=o.main[id]+o.sup[id];return {plan:o.plan[id],main:o.main[id],sup:o.sup[id],real:real,pay:o.pay[id],debt:real-o.pay[id],ret:o.ret[id],pct:o.plan[id]?real/o.plan[id]:0};}
+function M(p,id){var o=calc(p),r=rateAt(monthPos(p.t,p.i)),k=CURR==='USD'?1/r:1;var real=(o.main[id]+o.sup[id])*k,plan=CURR==='USD'?o.plan[id]:o.plan[id]*r;var n=nodes[id];
+  return {plan:plan,main:o.main[id]*k,sup:o.sup[id]*k,real:real,pay:o.pay[id]*k,debt:real-o.pay[id]*k,ret:o.ret[id]*k,pct:plan?real/plan:0,day:plan/daysIn(p),cl:n.hi-n.lo};}
+function rank(p,id){var n=nodes[id];if(n.parent==null)return '';var sib=nodes[n.parent].kids,me=M(p,id).pct,r=1;sib.forEach(function(s){if(s!==id&&M(p,s).pct>me)r++;});return r;}
 function drugs(p,id){
   var o=calc(p),n=nodes[id],res=DRUGS.map(function(){return 0;});
-  for(var L=n.lo;L<n.hi;L++){var k=nodes[leaves[L]];for(var d=0;d<DRUGS.length;d++)res[d]+=o.drug[L]*k.share[d];}
+  var cv=CURR==='USD'?1/rateAt(monthPos(p.t,p.i)):1;
+  for(var L=n.lo;L<n.hi;L++){var k=nodes[leaves[L]];for(var d=0;d<DRUGS.length;d++)res[d]+=o.drug[L]*k.share[d]*cv;}
   return res;
 }
 
 /* ====== Причины < 50% ====== */
+function px(k,p){return CURR==='USD'?DRUGS[k][1]/rateAt(monthPos(p.t,p.i)):DRUGS[k][1];}
 function rkey(id,p){return 'dp_reason_'+id+'_'+p.t+'_'+p.i;}
 function getReason(id,p){
   try{var v=localStorage.getItem(rkey(id,p));if(v!=null)return v;}catch(e){}
@@ -213,16 +226,17 @@ function setReason(id,p,v){try{localStorage.setItem(rkey(id,p),v);}catch(e){}}
 
 /* ====== Форматирование ====== */
 function grp(s){return s.replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
-function mln(v){var x=v/1e6,a=Math.abs(x);var s=a>=1000?grp(String(Math.round(a))):a.toFixed(1).replace('.',',');return (x<0?'−':'')+s;}
+function mln(v){var x=v/1e3,a=Math.abs(x);var s=a>=1000?grp(String(Math.round(a))):a.toFixed(1).replace('.',',');return (x<0?'−':'')+s;}
 function pc(v){return (v*100).toFixed(1).replace('.',',')+'%';}
 function sgn(v,f){return (v>0?'+':v<0?'−':'')+f(Math.abs(v));}
 function delta(cur,prev){var d=cur-prev,r=prev?d/prev:0;var c=d>=0?'up':'down',ar=d>=0?'▲':'▼';return {d:d,r:r,html:'<span class="'+c+'">'+ar+' '+sgn(d,mln)+'</span>',rhtml:'<span class="'+c+'">'+ar+' '+sgn(r,pc)+'</span>'};}
 function status(p){
   if(p<0.5)return '<span class="badge b-crit">⚠ '+pc(p)+'</span>';
-  if(p<0.9)return '<span class="badge b-warn">● '+pc(p)+'</span>';
+  if(p<0.8)return '<span class="badge b-warn">● '+pc(p)+'</span>';
+  if(p<1)return '<span class="badge b-near">◐ '+pc(p)+'</span>';
   return '<span class="badge b-good">✓ '+pc(p)+'</span>';
 }
-function pbar(p){var col=p<0.5?'var(--crit)':p<0.9?'var(--warn)':'var(--good)';return '<span class="pbar"><i style="width:'+Math.min(100,p*100).toFixed(0)+'%;background:'+col+'"></i></span>';}
+function pbar(p){var col=p<0.5?'var(--crit)':p<0.8?'var(--warn)':p<1?'var(--near)':'var(--good)';return '<span class="pbar"><i style="width:'+Math.min(100,p*100).toFixed(0)+'%;background:'+col+'"></i></span>';}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 
 /* ====== Состояние ====== */
@@ -237,25 +251,28 @@ function crumbs(){
   return '<div class="crumbs">'+a.map(function(id,k){var n=nodes[id];var t='<span class="lv">'+LV[n.lv]+'</span>'+esc(n.name);return (k?' › ':'')+(id===S.node?'<b>'+t+'</b>':'<a data-go="'+id+'">'+t+'</a>');}).join('')+'</div>';
 }
 function header(){
-  var opts=[];for(var k=0;k<12;k++){var i=CUR[S.t]-k;if(i<(S.t===3?1:1))break;opts.push('<option value="'+i+'"'+(i===S.i?' selected':'')+'>'+label(S.t,i,frac(S.t,i))+'</option>');}
-  return '<header class="top"><h1>Dusty Pharma · отчётность продаж<small>Прототип для CRM «Первая Форма» · данные демонстрационные · источник в рабочей версии — 1С</small></h1>'+
+  var opts=[];for(var k=0;k<12;k++){var i=CUR[S.t]-k;if(i<0)break;opts.push('<option value="'+i+'"'+(i===S.i?' selected':'')+'>'+label(S.t,i,frac(S.t,i))+'</option>');}
+  return '<header class="top"><h1>Dusty Pharma · отчётность продаж<small>Прототип для CRM «Первая Форма» · данные демонстрационные · источник в рабочей версии — 1С · суммы в USD и сомони</small></h1>'+
   '<div class="controls"><label class="note">Вход как&nbsp;<select id="role">'+roles.map(function(id){var n=nodes[id];return '<option value="'+id+'"'+(id===S.role?' selected':'')+'>'+LV[n.lv]+': '+esc(n.name)+'</option>';}).join('')+'</select></label></div></header>'+
   '<div class="card controls"><div class="seg" id="ptype">'+TN.map(function(t,k){return '<button data-t="'+k+'" class="'+(k===S.t?'on':'')+'">'+t+'</button>';}).join('')+'</div>'+
-  '<select id="period">'+opts.join('')+'</select><span class="note">сравнение с: '+label(S.t,prevP(curP()).i,prevP(curP()).f)+'</span></div>';
+  '<select id="period">'+opts.join('')+'</select>'+
+  '<label class="note">Сравнить с&nbsp;<select id="cmp">'+['прошлым периодом','тем же периодом год назад','тем же периодом 2 года назад'].map(function(t,k){return '<option value="'+k+'"'+(k===CMP?' selected':'')+'>'+t+'</option>';}).join('')+'</select></label>'+
+  '<span class="note">('+label(S.t,cmpP(curP()).i,cmpP(curP()).f)+')</span>'+
+  '<div class="seg" id="curr">'+['USD','сомони'].map(function(c){return '<button data-cur="'+c+'" class="'+(c===CURR?'on':'')+'">'+c+'</button>';}).join('')+'</div></div>';
 }
 function kpis(){
-  var p=curP(),c=M(p,S.node),v=M(prevP(p),S.node),dr=delta(c.real,v.real),dp=delta(c.pay,v.pay);
+  var p=curP(),c=M(p,S.node),v=M(cmpP(p),S.node),dr=delta(c.real,v.real),dp=delta(c.pay,v.pay);
   var kids=nodes[S.node].kids,plus=0,minus=0,np=0,nm=0;
-  kids.forEach(function(id){var d=M(p,id).real-M(prevP(p),id).real;if(d>=0){plus+=d;np++;}else{minus+=d;nm++;}});
+  kids.forEach(function(id){var d=M(p,id).real-M(cmpP(p),id).real;if(d>=0){plus+=d;np++;}else{minus+=d;nm++;}});
   var who=kids.length?LV[nodes[kids[0]].lv]:'';
   return '<div class="kpis">'+
-   '<div class="kpi hero"><div class="l">Выполнение плана</div><div class="v">'+status(c.pct)+'</div><div class="s">'+mln(c.real)+' из '+mln(c.plan)+' млн</div></div>'+
-   '<div class="kpi"><div class="l">Реализация (по накладным), млн</div><div class="v">'+mln(c.real)+'</div><div class="s">'+dr.html+' · '+dr.rhtml+'</div></div>'+
+   '<div class="kpi hero"><div class="l">Выполнение плана</div><div class="v">'+status(c.pct)+'</div><div class="s">'+mln(c.real)+' из '+mln(c.plan)+' '+U()+'</div><div class="s">план в день: '+mln(c.day)+'</div></div>'+
+   '<div class="kpi"><div class="l">Реализация (по накладным), '+U()+'</div><div class="v">'+mln(c.real)+'</div><div class="s">'+dr.html+' · '+dr.rhtml+'</div></div>'+
    '<div class="kpi"><div class="l">Основная продажа / Супер акция</div><div class="v">'+mln(c.main)+' <span class="note">/ '+mln(c.sup)+'</span></div><div class="s">доля акции '+pc(c.sup/c.real)+'</div></div>'+
-   '<div class="kpi"><div class="l">Выручка (оплачено), млн</div><div class="v">'+mln(c.pay)+'</div><div class="s">'+dp.html+' · '+dp.rhtml+'</div></div>'+
+   '<div class="kpi"><div class="l">Выручка (оплачено), '+U()+'</div><div class="v">'+mln(c.pay)+'</div><div class="s">'+dp.html+' · '+dp.rhtml+'</div></div>'+
    '<div class="kpi"><div class="l">Разница: реализация − оплата</div><div class="v">'+mln(c.debt)+'</div><div class="s">не оплачено '+pc(c.debt/c.real)+'</div></div>'+
-   '<div class="kpi"><div class="l">Возвраты / убытки, млн</div><div class="v down">'+mln(c.ret)+'</div><div class="s">'+pc(c.ret/c.real)+' от реализации</div></div>'+
-   (kids.length?'<div class="kpi"><div class="l">'+who+' в плюсе / в минусе к прошлому периоду</div><div class="v"><span class="up">▲ '+np+'</span> / <span class="down">▼ '+nm+'</span></div><div class="s"><span class="up">+'+mln(plus)+'</span> / <span class="down">'+sgn(minus,mln)+'</span> млн</div></div>':'')+
+   '<div class="kpi"><div class="l">Возвраты / убытки, '+U()+'</div><div class="v down">'+mln(c.ret)+'</div><div class="s">'+pc(c.ret/c.real)+' от реализации</div></div>'+
+   (kids.length?'<div class="kpi"><div class="l">'+who+' в плюсе / в минусе к периоду сравнения</div><div class="v"><span class="up">▲ '+np+'</span> / <span class="down">▼ '+nm+'</span></div><div class="s"><span class="up">+'+mln(plus)+'</span> / <span class="down">'+sgn(minus,mln)+'</span> '+U()+'</div></div>':'')+
   '</div>';
 }
 function chart(){
@@ -279,30 +296,30 @@ function chart(){
   var rows=arr.map(function(a){return '<tr><td>'+label(a.p.t,a.p.i,a.p.f)+'</td><td>'+mln(a.m.plan)+'</td><td>'+mln(a.m.main)+'</td><td>'+mln(a.m.sup)+'</td><td>'+mln(a.m.real)+'</td><td>'+pc(a.m.pct)+'</td><td>'+mln(a.m.pay)+'</td></tr>';}).join('');
   window.__chart=arr;
   return '<div class="card"><h2>Динамика: '+TN[S.t].toLowerCase()+' за '+(S.t===3?'годы':'последние '+arr.length)+'</h2>'+
-   '<div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Основная продажа</span><span><i class="sw" style="background:var(--s2)"></i>Супер акция</span><span><i class="sw line"></i>План</span><span class="note">млн сум</span></div>'+
+   '<div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Основная продажа</span><span><i class="sw" style="background:var(--s2)"></i>Супер акция</span><span><i class="sw line"></i>План</span><span class="note">'+U()+'</span></div>'+
    '<div class="chart" id="chart"><svg viewBox="0 0 '+Wd+' '+H+'" role="img" aria-label="Реализация и план по периодам">'+g+'</svg><div class="tip" id="tip"></div></div>'+
    '<details><summary>Таблица по периодам</summary><div class="tablebox"><table><thead><tr><th>Период</th><th>План</th><th>Основная</th><th>Супер акция</th><th>Реализация</th><th>% плана</th><th>Оплачено</th></tr></thead><tbody>'+rows+'</tbody></table></div></details></div>';
 }
-var COLS=[['name','Кто'],['plan','План'],['main','Основная'],['sup','Супер акция'],['real','Реализация'],['pct','% плана'],['prev','Прошлый период'],['d','Δ сумма'],['r','Δ %'],['pay','Выручка (оплата)'],['debt','Не оплачено'],['ret','Возвраты']];
+var COLS=[['name','Кто'],['rank','Место'],['cl','Клиентов'],['plan','План'],['main','Основная'],['sup','Супер акция'],['real','Реализация'],['pct','% плана'],['prev','Прошлый период'],['d','Δ сумма'],['r','Δ %'],['pay','Выручка (оплата)'],['debt','Не оплачено'],['ret','Возвраты']];
 function rowsData(){
-  var p=curP(),pp=prevP(p);
-  return nodes[S.node].kids.map(function(id){var m=M(p,id),v=M(pp,id);m.id=id;m.name=nodes[id].name;m.prev=v.real;m.d=m.real-v.real;m.r=v.real?m.d/v.real:0;return m;});
+  var p=curP(),pp=cmpP(p);
+  return nodes[S.node].kids.map(function(id){var m=M(p,id),v=M(pp,id);m.id=id;m.name=nodes[id].name;m.rank=rank(p,id);m.prev=v.real;m.d=m.real-v.real;m.r=v.real?m.d/v.real:0;return m;});
 }
 function table(){
   var n=nodes[S.node];if(!n.kids.length)return '';
   var p=curP(),rows=rowsData(),q=S.q.toLowerCase();
   if(q)rows=rows.filter(function(r){return r.name.toLowerCase().indexOf(q)>=0;});
   rows.sort(function(a,b){var x=a[S.sort],y=b[S.sort];return (typeof x==='string'?x.localeCompare(y):x-y)*S.dir;});
-  var t=M(p,S.node),tv=M(prevP(p),S.node),td=delta(t.real,tv.real),lv=nodes[n.kids[0]].lv;
-  var body='<tr class="total"><td>Итого ('+rows.length+')</td><td>'+mln(t.plan)+'</td><td>'+mln(t.main)+'</td><td>'+mln(t.sup)+'</td><td>'+mln(t.real)+'</td><td>'+pbar(t.pct)+pc(t.pct)+'</td><td>'+mln(tv.real)+'</td><td>'+td.html+'</td><td>'+td.rhtml+'</td><td>'+mln(t.pay)+'</td><td>'+mln(t.debt)+'</td><td>'+mln(t.ret)+'</td></tr>';
+  var t=M(p,S.node),tv=M(cmpP(p),S.node),td=delta(t.real,tv.real),lv=nodes[n.kids[0]].lv;
+  var body='<tr class="total"><td>Итого ('+rows.length+')</td><td></td><td>'+grp(String(t.cl))+'</td><td>'+mln(t.plan)+'</td><td>'+mln(t.main)+'</td><td>'+mln(t.sup)+'</td><td>'+mln(t.real)+'</td><td>'+pbar(t.pct)+pc(t.pct)+'</td><td>'+mln(tv.real)+'</td><td>'+td.html+'</td><td>'+td.rhtml+'</td><td>'+mln(t.pay)+'</td><td>'+mln(t.debt)+'</td><td>'+mln(t.ret)+'</td></tr>';
   body+=rows.map(function(r){var d=delta(r.real,r.prev);var nm=lv<4?'<a class="drill" data-go="'+r.id+'">'+esc(r.name)+' ›</a>':esc(r.name);
-    return '<tr class="row'+(r.pct<0.5?' low':'')+'"><td title="'+esc(r.name)+'">'+nm+'</td><td>'+mln(r.plan)+'</td><td>'+mln(r.main)+'</td><td>'+mln(r.sup)+'</td><td>'+mln(r.real)+'</td><td>'+pbar(r.pct)+(r.pct<0.5?'<b class="down">⚠ '+pc(r.pct)+'</b>':pc(r.pct))+'</td><td>'+mln(r.prev)+'</td><td>'+d.html+'</td><td>'+d.rhtml+'</td><td>'+mln(r.pay)+'</td><td>'+mln(r.debt)+'</td><td>'+mln(r.ret)+'</td></tr>';}).join('');
+    return '<tr class="row'+(r.pct<0.5?' low':'')+'"><td title="'+esc(r.name)+'">'+nm+'</td><td>'+r.rank+'</td><td>'+grp(String(r.cl))+'</td><td>'+mln(r.plan)+'</td><td>'+mln(r.main)+'</td><td>'+mln(r.sup)+'</td><td>'+mln(r.real)+'</td><td>'+pbar(r.pct)+(r.pct<0.5?'<b class="down">⚠ '+pc(r.pct)+'</b>':pc(r.pct))+'</td><td>'+mln(r.prev)+'</td><td>'+d.html+'</td><td>'+d.rhtml+'</td><td>'+mln(r.pay)+'</td><td>'+mln(r.debt)+'</td><td>'+mln(r.ret)+'</td></tr>';}).join('');
   var head=COLS.map(function(c){return '<th data-sort="'+c[0]+'">'+(c[0]==='name'?LVF[lv]:c[1])+(S.sort===c[0]?(S.dir>0?' ↑':' ↓'):'')+'</th>';}).join('');
   return '<div class="card"><div class="tools"><h2 style="margin:0">'+LVF[lv]+': '+n.kids.length+'</h2><div class="controls">'+
    '<input type="search" id="q" placeholder="Поиск по имени" value="'+esc(S.q)+'">'+
    '<button id="csv">Выгрузить таблицу</button><button class="primary" id="csvall">Выгрузить всё дерево</button></div></div>'+
    '<div class="tablebox" style="max-height:520px"><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>'+
-   '<div class="note" style="margin-top:6px">Суммы в млн сум. Нажмите на имя, чтобы провалиться ниже; на заголовок — чтобы отсортировать. Красная метка — план ниже 50%.</div></div>';
+   '<div class="note" style="margin-top:6px">Суммы в '+U()+'. Нажмите на имя, чтобы провалиться ниже; на заголовок — чтобы отсортировать. Красная метка — план ниже 50%.</div></div>';
 }
 function reasons(){
   var p=curP(),n=nodes[S.node],list=[];
@@ -312,56 +329,58 @@ function reasons(){
   var rows=list.map(function(r){var x=nodes[r.id],pr=nodes[x.parent],v=getReason(r.id,p);
     return '<tr class="row low"><td title="'+esc(x.name)+'"><a class="drill" data-go="'+r.id+'">'+LV[x.lv]+' · '+esc(x.name)+'</a></td><td style="text-align:left">'+esc(pr.name)+'</td><td>'+status(r.m.pct)+'</td><td>'+mln(r.m.real)+' / '+mln(r.m.plan)+'</td><td style="text-align:left"><input type="text" class="reason-in" data-rid="'+r.id+'" value="'+esc(v)+'" placeholder="⚠ Причина не указана — обязательно" list="rlist"></td></tr>';}).join('');
   return '<div class="card"><h2>План ниже 50% — причины ('+list.length+(miss?', <span class="reason-miss">без причины: '+miss+'</span>':'')+')</h2>'+
-   (list.length?'<div class="tablebox" style="max-height:420px"><table><thead><tr><th>Ответственный</th><th style="text-align:left">Руководитель</th><th>% плана</th><th>Факт / план, млн</th><th style="text-align:left">Причина</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+   (list.length?'<div class="tablebox" style="max-height:420px"><table><thead><tr><th>Ответственный</th><th style="text-align:left">Руководитель</th><th>% плана</th><th>Факт / план, '+U()+'</th><th style="text-align:left">Причина</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
    '<datalist id="rlist">'+REASONS.map(function(r){return '<option value="'+esc(r)+'">';}).join('')+'</datalist>'+
    '<div class="note" style="margin-top:6px">В CRM причину вводит сам ответственный; пока поле пустое — руководитель выше видит красную метку. В прототипе причина сохраняется только в этом браузере.</div>':'<div class="note">В этом периоде все выше 50%.</div>')+'</div>';
 }
 function drugTable(){
-  var p=curP(),c=drugs(p,S.node),v=drugs(prevP(p),S.node),n=nodes[S.node],lv=n.kids.length?nodes[n.kids[0]].lv:-1;
+  var p=curP(),c=drugs(p,S.node),v=drugs(cmpP(p),S.node),n=nodes[S.node],lv=n.kids.length?nodes[n.kids[0]].lv:-1;
   var idx=DRUGS.map(function(d,k){return k;}).sort(function(a,b){return c[b]-c[a];});
-  var body=idx.map(function(k){var d=delta(c[k],v[k]),qty=Math.round(c[k]/DRUGS[k][1]),q0=Math.round(v[k]/DRUGS[k][1]);
+  var body=idx.map(function(k){var d=delta(c[k],v[k]),qty=Math.round(c[k]/px(k,p)),q0=Math.round(v[k]/px(k,cmpP(p)));
     var open=S.drug===k&&lv>=0,sub='';
     if(open){var ks=n.kids.map(function(id){var s=drugs(p,id)[k];return {id:id,s:s};}).sort(function(a,b){return b.s-a.s;});
-      sub=ks.map(function(r){return '<tr class="sub"><td title="'+esc(nodes[r.id].name)+'">'+esc(nodes[r.id].name)+'</td><td>'+grp(String(Math.round(r.s/DRUGS[k][1])))+'</td><td>'+mln(r.s)+'</td><td></td><td></td></tr>';}).join('');}
+      sub=ks.map(function(r){return '<tr class="sub"><td title="'+esc(nodes[r.id].name)+'">'+esc(nodes[r.id].name)+'</td><td>'+grp(String(Math.round(r.s/px(k,p))))+'</td><td>'+mln(r.s)+'</td><td></td><td></td></tr>';}).join('');}
     return '<tr class="row"><td title="'+esc(DRUGS[k][0])+'">'+(lv>=0?'<a class="drill" data-drug="'+k+'">'+(open?'▾ ':'▸ ')+esc(DRUGS[k][0])+'</a>':esc(DRUGS[k][0]))+'</td><td>'+grp(String(qty))+'</td><td>'+mln(c[k])+'</td><td>'+delta(qty,q0).rhtml+'</td><td>'+d.html+'</td></tr>'+sub;}).join('');
-  return '<div class="card"><h2>Препараты'+(lv>=0?' — нажмите, чтобы увидеть, кто сколько '+(lv===4?'купил':'продал'):'')+'</h2><div class="tablebox"><table><thead><tr><th>Препарат</th><th>Кол-во, уп.</th><th>Сумма, млн</th><th>Δ кол-ва</th><th>Δ суммы, млн</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
+  return '<div class="card"><h2>Препараты'+(lv>=0?' — нажмите, чтобы увидеть, кто сколько '+(lv===4?'купил':'продал'):'')+'</h2><div class="tablebox"><table><thead><tr><th>Препарат</th><th>Кол-во, уп.</th><th>Сумма, '+U()+'</th><th>Δ кол-ва</th><th>Δ суммы, '+U()+'</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
 }
 function render(){
   var y=window.scrollY;
   document.getElementById('app').innerHTML=header()+crumbs()+kpis()+chart()+table()+reasons()+drugTable()+
-   '<p class="note">Прототип. Цифры, имена и препараты — вымышленные, для показа логики. Иерархия: 1 РТ → '+root.kids.length+' РМ → '+nodes.filter(function(n){return n.lv===2;}).length+' М → '+nodes.filter(function(n){return n.lv===3;}).length+' ТП → '+leaves.length+' контрагентов.</p>';
+   '<p class="note">Прототип. Цифры, имена и препараты — вымышленные, для показа логики. Курс 2026 — из их отчёта, 2024–2025 — допущение. Иерархия: 1 РТ → '+root.kids.length+' РМ → '+nodes.filter(function(n){return n.lv===2;}).length+' М → '+nodes.filter(function(n){return n.lv===3;}).length+' ТП → '+leaves.length+' контрагентов.</p>';
   window.scrollTo(0,y);
 }
 
 /* ====== Выгрузка CSV (открывается в Excel) ====== */
-function num(v){return (Math.round(v)/1).toFixed(0);}
+function num(v){return (Math.round(v*100)/100).toFixed(2).replace('.',',');}
 function download(name,rows){
   var csv='﻿'+rows.map(function(r){return r.map(function(c){c=String(c);return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(';');}).join('\r\n');
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
 }
-var HEAD=['План','Основная','Супер акция','Реализация','% плана','Прошлый период','Δ сумма','Δ %','Выручка (оплата)','Не оплачено','Возвраты'];
-function line(m,prev){var d=m.real-prev;return [num(m.plan),num(m.main),num(m.sup),num(m.real),(m.pct*100).toFixed(1),num(prev),num(d),prev?(d/prev*100).toFixed(1):'',num(m.pay),num(m.debt),num(m.ret)];}
-function csvTable(){var p=curP();download('otchet_'+label(S.t,S.i,p.f).replace(/\s+/g,'_')+'.csv',[['Имя'].concat(HEAD,['Причина (<50%)'])].concat(rowsData().map(function(r){return [r.name].concat(line(r,r.prev),[r.pct<0.5?getReason(r.id,p):'']);})));}
+var HEAD=['Место','Клиентов','План','Основная','Супер акция','Реализация','% плана','Прошлый период','Δ сумма','Δ %','Выручка (оплата)','Не оплачено','Возвраты'];
+function line(m,prev,rk){var d=m.real-prev;return [rk,m.cl,num(m.plan),num(m.main),num(m.sup),num(m.real),(m.pct*100).toFixed(1).replace('.',','),num(prev),num(d),prev?(d/prev*100).toFixed(1).replace('.',','):'',num(m.pay),num(m.debt),num(m.ret)];}
+function csvTable(){var p=curP();download('otchet_'+CURR+'_'+label(S.t,S.i,p.f).replace(/\s+/g,'_')+'.csv',[['Имя'].concat(HEAD,['Причина (<50%)'])].concat(rowsData().map(function(r){return [r.name].concat(line(r,r.prev,r.rank),[r.pct<0.5?getReason(r.id,p):'']);})));}
 function csvAll(){
-  var p=curP(),pp=prevP(p),out=[['Уровень','РМ','М','ТП','Контрагент'].concat(HEAD,['Причина (<50%)'])];
+  var p=curP(),pp=cmpP(p),out=[['Уровень','РМ','М','ТП','Контрагент'].concat(HEAD,['Причина (<50%)'])];
   (function walk(id){var n=nodes[id],m=M(p,id),path=['','','',''];n.anc.slice().reverse().forEach(function(a){var x=nodes[a];if(x.lv>0)path[x.lv-1]=x.name;});
-    out.push([LV[n.lv]].concat(path,line(m,M(pp,id).real),[m.pct<0.5&&n.lv<4?getReason(id,p):'']));n.kids.forEach(walk);})(S.role);
-  download('derevo_'+label(S.t,S.i,p.f).replace(/\s+/g,'_')+'.csv',out);
+    out.push([LV[n.lv]].concat(path,line(m,M(pp,id).real,n.lv<4?rank(p,id):''),[m.pct<0.5&&n.lv<4?getReason(id,p):'']));n.kids.forEach(walk);})(S.role);
+  download('derevo_'+CURR+'_'+label(S.t,S.i,p.f).replace(/\s+/g,'_')+'.csv',out);
 }
 
 /* ====== События ====== */
 var app=document.getElementById('app');
 app.addEventListener('click',function(e){
-  var t=e.target.closest('[data-go],[data-t],[data-sort],[data-drug],#csv,#csvall');if(!t)return;
+  var t=e.target.closest('[data-go],[data-t],[data-cur],[data-sort],[data-drug],#csv,#csvall');if(!t)return;
   if(t.dataset.go!=null){S.node=+t.dataset.go;S.q='';S.drug=-1;render();window.scrollTo(0,0);return;}
   if(t.dataset.t!=null){S.t=+t.dataset.t;S.i=CUR[S.t];render();return;}
-  if(t.dataset.sort){if(S.sort===t.dataset.sort)S.dir*=-1;else{S.sort=t.dataset.sort;S.dir=t.dataset.sort==='name'?1:-1;}render();return;}
+  if(t.dataset.cur){CURR=t.dataset.cur;render();return;}
+  if(t.dataset.sort){if(S.sort===t.dataset.sort)S.dir*=-1;else{S.sort=t.dataset.sort;S.dir=(t.dataset.sort==='name'||t.dataset.sort==='rank')?1:-1;}render();return;}
   if(t.dataset.drug!=null){var k=+t.dataset.drug;S.drug=S.drug===k?-1:k;render();return;}
   if(t.id==='csv')csvTable();if(t.id==='csvall')csvAll();
 });
 app.addEventListener('change',function(e){
   if(e.target.id==='role'){S.role=S.node=+e.target.value;S.drug=-1;render();}
   else if(e.target.id==='period'){S.i=+e.target.value;render();}
+  else if(e.target.id==='cmp'){CMP=+e.target.value;render();}
   else if(e.target.dataset.rid){setReason(+e.target.dataset.rid,curP(),e.target.value.trim());render();}
 });
 app.addEventListener('input',function(e){if(e.target.id==='q'){S.q=e.target.value;var pos=e.target.selectionStart;render();var q=document.getElementById('q');q.focus();q.setSelectionRange(pos,pos);}});
