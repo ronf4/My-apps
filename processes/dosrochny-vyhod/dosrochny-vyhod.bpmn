@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_dosrochny" targetNamespace="http://koinotinav.tj/bpmn" exporter="Claude (Рон)" exporterVersion="1.0">
 <bpmn:collaboration id="Collab_dosrochny">
-<bpmn:participant id="Part_P1" name="1. Досрочный выход из Неделимой части отпуска" processRef="P1" />
-<bpmn:participant id="Part_P2" name="2. Использование Остатка Неделимой части" processRef="P2" />
+<bpmn:participant id="Part_P1" name="1. Досрочный выход (ветка в БП «Отпуск», раздел 60)" processRef="P1" />
+<bpmn:participant id="Part_P2" name="2. Использование Остатка (новый тип заявки в БП «Отпуск»)" processRef="P2" />
 </bpmn:collaboration>
 <bpmn:process id="P1" isExecutable="false">
 <bpmn:laneSet id="LS_P1">
@@ -13,17 +13,17 @@
 <bpmn:lane id="P1_SYS" name="Система 1Ф"><bpmn:flowNodeRef>p1_t_check</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_g_check</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_e_block</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_g_init</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_t_reject</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_e_reject</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_t_order</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_t_apply</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_t_notify</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_g_split</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_g_join</bpmn:flowNodeRef><bpmn:flowNodeRef>p1_e_ok</bpmn:flowNodeRef></bpmn:lane>
 <bpmn:lane id="P1_FIN" name="ФЭД / БЮД"><bpmn:flowNodeRef>p1_t_fin</bpmn:flowNodeRef></bpmn:lane>
 </bpmn:laneSet>
-<bpmn:startEvent id="p1_s_emp" name="Нужно выйти досрочно"><bpmn:outgoing>P1_f0</bpmn:outgoing></bpmn:startEvent>
-<bpmn:startEvent id="p1_s_mgr" name="Производственная необходимость"><bpmn:outgoing>P1_f1</bpmn:outgoing></bpmn:startEvent>
-<bpmn:userTask id="p1_t_emp_req" name="«Выйти досрочно»: указать дату выхода"><bpmn:incoming>P1_f0</bpmn:incoming><bpmn:outgoing>P1_f2</bpmn:outgoing></bpmn:userTask>
-<bpmn:userTask id="p1_t_mgr_req" name="«Отозвать из отпуска»: причина, задачи, дата"><bpmn:incoming>P1_f1</bpmn:incoming><bpmn:outgoing>P1_f3</bpmn:outgoing></bpmn:userTask>
+<bpmn:startEvent id="p1_s_emp" name="Отпуск оформлен, нужно выйти раньше"><bpmn:outgoing>P1_f0</bpmn:outgoing></bpmn:startEvent>
+<bpmn:startEvent id="p1_s_mgr" name="Отпуск оформлен, нужен сотрудник"><bpmn:outgoing>P1_f1</bpmn:outgoing></bpmn:startEvent>
+<bpmn:userTask id="p1_t_emp_req" name="В заявке на отпуск «Выйти досрочно»: дата выхода"><bpmn:incoming>P1_f0</bpmn:incoming><bpmn:outgoing>P1_f2</bpmn:outgoing></bpmn:userTask>
+<bpmn:userTask id="p1_t_mgr_req" name="В заявке на отпуск «Отозвать из отпуска»: причина, задачи, дата"><bpmn:incoming>P1_f1</bpmn:incoming><bpmn:outgoing>P1_f3</bpmn:outgoing></bpmn:userTask>
 <bpmn:serviceTask id="p1_t_check" name="Проверки: отпуск начат, 7 дн. использовано, рабочий день, нет 2-го обращения"><bpmn:incoming>P1_f2</bpmn:incoming><bpmn:incoming>P1_f3</bpmn:incoming><bpmn:outgoing>P1_f4</bpmn:outgoing></bpmn:serviceTask>
 <bpmn:exclusiveGateway id="p1_g_check" name="Проверки пройдены?"><bpmn:incoming>P1_f4</bpmn:incoming><bpmn:outgoing>P1_f5</bpmn:outgoing><bpmn:outgoing>P1_f6</bpmn:outgoing></bpmn:exclusiveGateway>
 <bpmn:endEvent id="p1_e_block" name="Заблокировано, причина показана"><bpmn:incoming>P1_f5</bpmn:incoming></bpmn:endEvent>
 <bpmn:exclusiveGateway id="p1_g_init" name="Кто инициатор?"><bpmn:incoming>P1_f6</bpmn:incoming><bpmn:outgoing>P1_f7</bpmn:outgoing><bpmn:outgoing>P1_f8</bpmn:outgoing></bpmn:exclusiveGateway>
 <bpmn:userTask id="p1_t_consent" name="Рассмотреть запрос на отзыв: согласие или причина отказа"><bpmn:incoming>P1_f7</bpmn:incoming><bpmn:outgoing>P1_f9</bpmn:outgoing></bpmn:userTask>
 <bpmn:exclusiveGateway id="p1_g_consent" name="Согласен?"><bpmn:incoming>P1_f9</bpmn:incoming><bpmn:outgoing>P1_f10</bpmn:outgoing><bpmn:outgoing>P1_f11</bpmn:outgoing></bpmn:exclusiveGateway>
-<bpmn:endEvent id="p1_e_noconsent" name="Отзыв не оформлен, отпуск сохраняется"><bpmn:incoming>P1_f10</bpmn:incoming></bpmn:endEvent>
+<bpmn:endEvent id="p1_e_noconsent" name="Заявка снова «Отпуск оформлен», отпуск без изменений"><bpmn:incoming>P1_f10</bpmn:incoming></bpmn:endEvent>
 <bpmn:userTask id="p1_t_mgr_appr" name="Согласовать досрочный выход (1 раб. день)"><bpmn:incoming>P1_f8</bpmn:incoming><bpmn:outgoing>P1_f12</bpmn:outgoing></bpmn:userTask>
 <bpmn:exclusiveGateway id="p1_g_mgr" name="Согласовано?"><bpmn:incoming>P1_f12</bpmn:incoming><bpmn:outgoing>P1_f13</bpmn:outgoing><bpmn:outgoing>P1_f14</bpmn:outgoing></bpmn:exclusiveGateway>
 <bpmn:userTask id="p1_t_dep_appr" name="Окончательное управленческое решение (1 раб. день)"><bpmn:incoming>P1_f11</bpmn:incoming><bpmn:incoming>P1_f13</bpmn:incoming><bpmn:outgoing>P1_f15</bpmn:outgoing></bpmn:userTask>
@@ -31,7 +31,7 @@
 <bpmn:userTask id="p1_t_hr_check" name="Кадровая проверка: приказ об отпуске, согласие, дата, БП"><bpmn:incoming>P1_f16</bpmn:incoming><bpmn:outgoing>P1_f18</bpmn:outgoing></bpmn:userTask>
 <bpmn:exclusiveGateway id="p1_g_hr" name="Препятствий нет?"><bpmn:incoming>P1_f18</bpmn:incoming><bpmn:outgoing>P1_f19</bpmn:outgoing><bpmn:outgoing>P1_f20</bpmn:outgoing></bpmn:exclusiveGateway>
 <bpmn:serviceTask id="p1_t_reject" name="Уведомить инициатора: причина, отпуск остаётся в силе"><bpmn:incoming>P1_f14</bpmn:incoming><bpmn:incoming>P1_f17</bpmn:incoming><bpmn:incoming>P1_f19</bpmn:incoming><bpmn:outgoing>P1_f21</bpmn:outgoing></bpmn:serviceTask>
-<bpmn:endEvent id="p1_e_reject" name="Отказ, исходный отпуск в силе"><bpmn:incoming>P1_f21</bpmn:incoming></bpmn:endEvent>
+<bpmn:endEvent id="p1_e_reject" name="Заявка снова «Отпуск оформлен»"><bpmn:incoming>P1_f21</bpmn:incoming></bpmn:endEvent>
 <bpmn:serviceTask id="p1_t_order" name="Сформировать проект Приказа о досрочном выходе"><bpmn:incoming>P1_f20</bpmn:incoming><bpmn:outgoing>P1_f22</bpmn:outgoing></bpmn:serviceTask>
 <bpmn:userTask id="p1_t_hr_confirm" name="Проверить и «Подтвердить» Приказ"><bpmn:incoming>P1_f22</bpmn:incoming><bpmn:outgoing>P1_f23</bpmn:outgoing></bpmn:userTask>
 <bpmn:serviceTask id="p1_t_apply" name="Изменить даты отпуска; Остаток = 14 − использовано"><bpmn:incoming>P1_f23</bpmn:incoming><bpmn:outgoing>P1_f24</bpmn:outgoing></bpmn:serviceTask>
@@ -40,7 +40,7 @@
 <bpmn:userTask id="p1_t_return" name="Выйти на работу в дату Приказа"><bpmn:incoming>P1_f26</bpmn:incoming><bpmn:outgoing>P1_f28</bpmn:outgoing></bpmn:userTask>
 <bpmn:userTask id="p1_t_fin" name="Расчёт и корректировка выплат"><bpmn:incoming>P1_f27</bpmn:incoming><bpmn:outgoing>P1_f29</bpmn:outgoing></bpmn:userTask>
 <bpmn:parallelGateway id="p1_g_join" name=""><bpmn:incoming>P1_f28</bpmn:incoming><bpmn:incoming>P1_f29</bpmn:incoming><bpmn:outgoing>P1_f30</bpmn:outgoing></bpmn:parallelGateway>
-<bpmn:endEvent id="p1_e_ok" name="Досрочный выход оформлен, Остаток создан"><bpmn:incoming>P1_f30</bpmn:incoming></bpmn:endEvent>
+<bpmn:endEvent id="p1_e_ok" name="Заявка «Завершена», Остаток создан"><bpmn:incoming>P1_f30</bpmn:incoming></bpmn:endEvent>
 <bpmn:sequenceFlow id="P1_f0" sourceRef="p1_s_emp" targetRef="p1_t_emp_req" />
 <bpmn:sequenceFlow id="P1_f1" sourceRef="p1_s_mgr" targetRef="p1_t_mgr_req" />
 <bpmn:sequenceFlow id="P1_f2" sourceRef="p1_t_emp_req" targetRef="p1_t_check" />
@@ -84,7 +84,7 @@
 <bpmn:startEvent id="p2_s_emp" name="Есть Остаток, нужен отдых"><bpmn:outgoing>P2_f0</bpmn:outgoing></bpmn:startEvent>
 <bpmn:startEvent id="p2_s_timer" name="За 30 дней до конца года Остаток не использован"><bpmn:outgoing>P2_f1</bpmn:outgoing><bpmn:timerEventDefinition id="p2_s_timer_td" /></bpmn:startEvent>
 <bpmn:serviceTask id="p2_t_remind" name="Уведомить сотрудника и руководителя"><bpmn:incoming>P2_f1</bpmn:incoming><bpmn:outgoing>P2_f2</bpmn:outgoing></bpmn:serviceTask>
-<bpmn:userTask id="p2_t_new" name="Заявка на Остаток (≥ 7 раб. дней до начала): выбрать дату начала"><bpmn:incoming>P2_f0</bpmn:incoming><bpmn:incoming>P2_f2</bpmn:incoming><bpmn:incoming>P2_f6</bpmn:incoming><bpmn:incoming>P2_f10</bpmn:incoming><bpmn:outgoing>P2_f3</bpmn:outgoing></bpmn:userTask>
+<bpmn:userTask id="p2_t_new" name="Новая заявка в БП «Отпуск», тип «Остаток» (≥ 7 раб. дн.): дата начала"><bpmn:incoming>P2_f0</bpmn:incoming><bpmn:incoming>P2_f2</bpmn:incoming><bpmn:incoming>P2_f6</bpmn:incoming><bpmn:incoming>P2_f10</bpmn:incoming><bpmn:outgoing>P2_f3</bpmn:outgoing></bpmn:userTask>
 <bpmn:serviceTask id="p2_t_calc" name="Подставить 7 дн., рассчитать окончание и выход с учётом праздников"><bpmn:incoming>P2_f3</bpmn:incoming><bpmn:outgoing>P2_f4</bpmn:outgoing></bpmn:serviceTask>
 <bpmn:exclusiveGateway id="p2_g_block" name="Блокировки пройдены?"><bpmn:incoming>P2_f4</bpmn:incoming><bpmn:outgoing>P2_f5</bpmn:outgoing><bpmn:outgoing>P2_f7</bpmn:outgoing></bpmn:exclusiveGateway>
 <bpmn:serviceTask id="p2_t_reason" name="Показать причину: сверх Остатка, дубль, пересечение"><bpmn:incoming>P2_f5</bpmn:incoming><bpmn:outgoing>P2_f6</bpmn:outgoing></bpmn:serviceTask>
