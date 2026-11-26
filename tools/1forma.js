@@ -80,7 +80,8 @@ const COMMANDS = {
     await page.fill('#login-input', login);
     await page.fill('#pass-input', pass);
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(6000);
+    await page.waitForURL((u) => !u.toString().includes('signin'), { timeout: 30000 }).catch(() => {});
+    await page.waitForLoadState('networkidle').catch(() => {});
     await ctx.storageState({ path: STATE });
     console.log(page.url().includes('signin') ? 'Вход НЕ выполнен' : 'Вход выполнен, сессия сохранена');
     await browser.close();
