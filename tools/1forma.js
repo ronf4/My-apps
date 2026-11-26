@@ -28,7 +28,24 @@ async function open() {
   return { browser, ctx, page };
 }
 
-const api = (page, url, method = 'GET', body) =>
+// Быстрый режим без браузера: запросы идут напрямую с cookies сохранённой сессии.
+function httpClient() {
+  const st = JSON.parse(fs.readFileSync(STATE, 'utf8'));
+  const cookie = st.cookies.filter((c) => c.domain.includes('koinotinav')).map((c) => `${c.name}=${c.value}`).join('; ');
+  return { http: true, cookie };
+}
+
+async function httpApi(cl, url, method, body) {
+  const r = await fetch(BASE + url, {
+    method,
+    headers: { 'Content-Type': 'application/json', cookie: cl.cookie, 'X-Requested-With': 'XMLHttpRequest' },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  const text = await r.text();
+  try { return { status: r.status, data: JSON.parse(text) }; } catch { return { status: r.status, data: text }; }
+}
+
+const api = (page, url, method = 'GET', body) => page.http ? httpApi(page, url, method, body) :
   page.evaluate(async ([url, method, body]) => {
     const r = await fetch(url, {
       method,
@@ -151,25 +168,22 @@ const COMMANDS = {
 
 // ---------- Мои задачи (только чтение, все разделы параллельно) ----------
 COMMANDS.my = async (page) => {
-  const out = await page.evaluate(async () => {
-    const tree = (await (await fetch('/app/v1.0/api/subcategories/tree')).json()).data;
-    const subs = tree.filter((n) => n.nodeType === 'Subcategory' && !n.isDictionary);
-    const sel = ['task', 'state', 'dueDate', 'owner', 'performer', 'allPerformers'].map((f) => ({ field: f, type: f === 'dueDate' ? 'dateTimeValue' : f, extParamType: null }));
-    const body = { startRow: 0, endRow: 1000, rowGroupCols: [], valueCols: [], pivotCols: [], pivotMode: false, groupKeys: [], filterModel: {}, sortModel: [], select: sel, quickFilter: '', quickFilterAllColumns: false, myTasks: null, tasksState: null, smartExpressionIds: null, selectionId: null, context: null, aggregations: [], withAdvancedFilter: false };
-    const all = await Promise.all(subs.map(async (s) => {
-      try {
-        const j = await (await fetch(`/api-core/datasource/subcat/${s.id}/data`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
-        return (j.tasksDataSourceResponse || []).map((t) => ({ ...t, sec: s.name.trim() }));
-      } catch { return []; }
-    }));
-    const me = 2340;
-    return all.flat().filter((t) => !t.isClosed).map((t) => {
-      const own = t.owner?.ownerId === me;
-      const perf = t.performer?.id === me || (t.allPerformersData || t.allPerformers || []).some?.((p) => (p.id ?? p.userId) === me);
-      if (!own && !perf) return null;
-      return { role: perf ? 'исполнитель' : 'заказчик', od: t.isOverdue, due: (t.dueDate || '').slice(0, 10), id: t.task.taskId, st: t.state.stateDescription.trim(), sec: t.sec, name: t.task.taskText, who: perf ? t.owner?.owner : t.performer?.name };
-    }).filter(Boolean);
-  });
+  const tree = (await api(page, '/app/v1.0/api/subcategories/tree')).data.data;
+  const subs = tree.filter((n) => n.nodeType === 'Subcategory' && !n.isDictionary);
+  const sel = ['task', 'state', 'dueDate', 'owner', 'performer', 'allPerformers'].map((f) => ({ field: f, type: f === 'dueDate' ? 'dateTimeValue' : f, extParamType: null }));
+  const all = await Promise.all(subs.map(async (s) => {
+    try {
+      const r = await api(page, `/api-core/datasource/subcat/${s.id}/data`, 'POST', gridBody(sel, 1000));
+      return (r.data.tasksDataSourceResponse || []).map((t) => ({ ...t, sec: s.name.trim() }));
+    } catch { return []; }
+  }));
+  const me = 2340;
+  const out = all.flat().filter((t) => !t.isClosed).map((t) => {
+    const own = t.owner?.ownerId === me;
+    const perf = t.performer?.id === me || (Array.isArray(t.allPerformers) && t.allPerformers.some((p) => (p.id ?? p.userId) === me));
+    if (!own && !perf) return null;
+    return { role: perf ? 'исполнитель' : 'заказчик', od: t.isOverdue, due: (t.dueDate || '').slice(0, 10), id: t.task.taskId, st: t.state.stateDescription.trim(), sec: t.sec, name: t.task.taskText, who: perf ? t.owner?.owner : t.performer?.name };
+  }).filter(Boolean);
   out.sort((a, b) => a.role.localeCompare(b.role) || a.due.localeCompare(b.due));
   for (const r of out) console.log(`${r.role}\t${r.od ? 'ПРОСРОЧ ' : ''}${r.due}\t${r.id}\t${r.st}\t${r.sec}\t${r.name}\t${r.who || ''}`);
 };
@@ -332,6 +346,12 @@ async function pickOption(page, wrap, value) {
     process.exit(1);
   }
   if (cmd === 'login') return COMMANDS.login();
+  if (!['create', 'form'].includes(cmd)) {
+    const cl = httpClient();
+    const auth = await httpApi(cl, '/api/auth/info', 'GET');
+    if (auth.status !== 200) { console.log('Сессия истекла — нужен login'); process.exit(2); }
+    return COMMANDS[cmd](cl, ...args);
+  }
   const { browser, page } = await open();
   if (page.url().includes('signin')) {
     console.log('Сессия истекла — нужен login');
