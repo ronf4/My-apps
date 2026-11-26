@@ -147,10 +147,161 @@ const COMMANDS = {
   },
 };
 
+// ---------- Чаты и комментарии ----------
+const COMMENT_DEFAULTS = {
+  addToQuickReply: false, chatMode: false, copyRecipientGroupsIds: [], copyRecipientsIds: [], fileIds: [],
+  forceEmail: false, forwardedCommentId: null, inReplyToCommentId: null, location: null, maxCommentId: null,
+  needSubscribe: true, needSubscriberOthers: true, needsAnswer: false, recipientGroupsIds: [], recipientIds: [],
+  sendSms: false, guid: null, silentComment: false,
+};
+
+async function sendComment(page, taskId, text, extra = {}) {
+  const body = { ...COMMENT_DEFAULTS, ...extra, taskId: Number(taskId), commentText: text };
+  const r = await api(page, '/api/comments/add', 'POST', body);
+  const ok = r.status >= 200 && r.status < 300;
+  console.log(ok ? `Отправлено в задачу/чат ${taskId}` : `Ошибка ${r.status}: ${JSON.stringify(r.data).slice(0, 300)}`);
+}
+
+Object.assign(COMMANDS, {
+  // Список чатов (только чтение)
+  async chats(page) {
+    const r = await api(page, '/api/chats?limit=40&offset=0');
+    const list = r.data?.data?.data || r.data?.data?.chats || r.data?.data || [];
+    if (!Array.isArray(list)) return console.log(JSON.stringify(r.data).slice(0, 1500));
+    for (const c of list) {
+      const id = c.taskId ?? c.id;
+      const name = c.name || c.title || c.taskText || c.description || '';
+      const unread = c.unreadCount ?? c.unreadCommentsCount ?? c.unread ?? 0;
+      console.log(`${id}\t${unread ? 'непрочит. ' + unread : ''}\t${name}`);
+    }
+  },
+
+  // Последние сообщения ленты по задаче/чату (только чтение)
+  async messages(page, taskId, limit = '10') {
+    const r = await api(page, '/api/comments/lenta', 'POST', {
+      limit: 120, offset: 0, lentaCommTypes: [0], includeReactions: false, grouped: false,
+      collapseThreads: false, toUserAsAnyRecipientOnly: false, compactResponse: true,
+    });
+    const users = Object.fromEntries((r.data.data?.users || []).map((u) => [u.userId ?? u.id, u.userName ?? u.name]));
+    const list = (r.data.data?.comments || []).filter((c) => String(c.taskID) === String(taskId)).slice(0, Number(limit));
+    if (!list.length) return console.log('В последних сообщениях ленты по этой задаче ничего нет');
+    for (const c of list.reverse()) console.log(`${c.date.slice(0, 16).replace('T', ' ')} ${c.userName || users[c.userID] || c.userID} [${c.commentID}]: ${c.content}`);
+  },
+
+  // ИЗМЕНЯЕТ: сообщение в задачу или чат. send <taskId> "текст"
+  async send(page, taskId, ...words) {
+    if (!taskId || !words.length) throw new Error('send <taskId> "текст"');
+    await sendComment(page, taskId, words.join(' '));
+  },
+
+  // ИЗМЕНЯЕТ: ответ на конкретное сообщение. reply <taskId> <commentId> "текст"
+  async reply(page, taskId, commentId, ...words) {
+    if (!commentId || !words.length) throw new Error('reply <taskId> <commentId> "текст"');
+    await sendComment(page, taskId, words.join(' '), { inReplyToCommentId: Number(commentId) });
+  },
+
+  // Поля формы создания (только чтение). form <subcatId> ["Поле=Значение" ... чтобы раскрыть зависимые поля]
+  async form(page, subcatId, ...pairs) {
+    await page.goto(`${BASE}/spa/tasks/subcat/${subcatId}/grid`, { waitUntil: 'networkidle', timeout: 60000 });
+    await page.waitForTimeout(1500);
+    await page.locator('button:has-text("Создать") >> visible=true').last().click();
+    await page.waitForTimeout(4000);
+    for (const x of pairs) { const i = x.indexOf('='); await fillField(page, x.slice(0, i).trim(), x.slice(i + 1).trim()); await page.waitForTimeout(800); }
+    const f = await page.evaluate(() => [...document.querySelectorAll('vh-ext-param-control-wrapper')].filter((e) => e.offsetParent)
+      .map((e) => `${(e.querySelector('[control-name]') || {}).innerText?.trim() || '?'}${e.querySelector('.vh-ext-param-control-wrapper--required-sign') ? ' *' : ''} (${e.getAttribute('ep-wrapper-type')})`));
+    console.log(f.join('\n'));
+  },
+
+  // Создание заявки/задачи через форму 1Ф.
+  // create <subcatId> "Поле=Значение" ... [--go]
+  // Без --go только заполняет форму и делает снимок (ничего не создаёт).
+  async create(page, subcatId, ...pairs) {
+    const go = pairs.includes('--go');
+    const fields = pairs.filter((x) => x !== '--go').map((x) => {
+      const i = x.indexOf('=');
+      return [x.slice(0, i).trim(), x.slice(i + 1).trim()];
+    });
+    let created = null;
+    page.on('response', async (r) => {
+      if (/\/api\/tasks$/.test(r.url()) && r.request().method() === 'POST') {
+        try { created = (await r.json()).newTaskIds; } catch { /* ignore */ }
+      }
+    });
+    await page.goto(`${BASE}/spa/tasks/subcat/${subcatId}/grid`, { waitUntil: 'networkidle', timeout: 60000 });
+    await page.waitForTimeout(1500);
+    await page.locator('button:has-text("Создать") >> visible=true').last().click();
+    await page.waitForTimeout(4000);
+
+    for (const [label, value] of fields) {
+      const ok = await fillField(page, label, value);
+      console.log(`${ok ? 'OK ' : 'НЕТ'} ${label} = ${value}`);
+      await page.waitForTimeout(800);
+    }
+    const shot = path.join(__dirname, `1forma-create-${subcatId}.png`);
+    await page.screenshot({ path: shot, fullPage: true });
+    const missing = await page.evaluate(() => [...document.querySelectorAll('vh-ext-param-control-wrapper')]
+      .filter((e) => e.offsetParent && e.querySelector('.vh-ext-param-control-wrapper--required-sign') && e.querySelector('.value-empty'))
+      .map((e) => (e.querySelector('[control-name]') || {}).innerText?.trim()));
+    if (missing.length) console.log('Не заполнены обязательные:', missing.join(', '));
+    if (!go) return console.log(`Проверка без создания. Снимок формы: ${shot}`);
+
+    const btn = page.locator('button >> visible=true', { hasText: /^\s*Создать\s+\S+/ }).last();
+    await btn.click();
+    for (let i = 0; i < 20 && !created; i++) await page.waitForTimeout(500);
+    console.log(created ? `Создано: №${created.join(', ')} — ${BASE}/spa/tasks/${created[0]}` : 'Не создано — смотри снимок/обязательные поля');
+  },
+});
+
+// Заполнение одного поля формы по подписи
+async function fillField(page, label, value) {
+  const wrap = page.locator('vh-ext-param-control-wrapper >> visible=true')
+    .filter({ has: page.locator('.vh-ext-param-control-wrapper--name', { hasText: label }) }).first();
+  if (await wrap.count()) {
+    const type = await wrap.getAttribute('ep-wrapper-type');
+    await wrap.click();
+    await page.waitForTimeout(700);
+    if (/LookUp|Combobox|Select|MultiSlct/.test(type)) return pickOption(page, wrap, value);
+    if (type === 'Checkbox') { if (/^(да|yes|true|1)$/i.test(value)) await wrap.locator('input').first().check().catch(() => wrap.click()); return true; }
+    if (type === 'TextArea') { const ed = wrap.locator('.ck-editor__editable').first(); await ed.click(); await page.keyboard.type(value); return true; }
+    const input = wrap.locator('textarea, input:not([type=file])').first();
+    await input.fill(value);
+    await page.keyboard.press('Tab');
+    return true;
+  }
+  // Стандартные поля формы (Дедлайн, Исполнители и т.п.)
+  const lab = page.locator(`text="${label}" >> visible=true`).first();
+  if (!(await lab.count())) return false;
+  const box = lab.locator('xpath=ancestor::*[.//input][1]');
+  const input = box.locator('input:not([type=file]):not([type=checkbox])').first();
+  await input.click();
+  if (/Исполнител|Сотрудник|Согласующ/i.test(label)) {
+    await page.keyboard.type(value, { delay: 40 });
+    await page.waitForTimeout(2500);
+    return pickOption(page, null, value);
+  }
+  await input.fill(value);
+  await page.keyboard.press('Tab');
+  return true;
+}
+
+async function pickOption(page, wrap, value) {
+  const search = page.locator('.cdk-overlay-container input[placeholder="Поиск"] >> visible=true').first();
+  if (await search.count()) { await search.fill(value.split(' ')[0]); await page.waitForTimeout(2500); }
+  const opts = page.locator('.cdk-overlay-container [role="option"], .cdk-overlay-container mat-option, .cdk-overlay-container li');
+  const n = await opts.count();
+  for (let k = 0; k < n; k++) {
+    if ((await opts.nth(k).innerText()).replace(/\s+/g, ' ').includes(value)) { await opts.nth(k).click(); return true; }
+  }
+  await page.keyboard.press('Escape');
+  return false;
+}
+
 (async () => {
   const [cmd, ...args] = process.argv.slice(2);
   if (!COMMANDS[cmd]) {
-    console.log('Команды: login | status | questions | questions-close | read-all | projects | card <id> | section <id>');
+    console.log('Команды: login | status | questions | questions-close | read-all | projects | card <id> | section <id>'
+      + ' | chats | messages <taskId> | send <taskId> "текст" | reply <taskId> <commentId> "текст"'
+      + ' | form <subcatId> | create <subcatId> "Поле=Значение" ... [--go]');
     process.exit(1);
   }
   if (cmd === 'login') return COMMANDS.login();

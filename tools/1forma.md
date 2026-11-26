@@ -11,6 +11,13 @@ node tools/1forma.js card 67964        # статус и кнопки задач
 node tools/1forma.js section 215       # статусы и переходы раздела (только чтение)
 node tools/1forma.js read-all          # ИЗМЕНЯЕТ: вся лента прочитана
 node tools/1forma.js questions-close   # ИЗМЕНЯЕТ: мои вопросы отмечены отвеченными
+node tools/1forma.js chats             # список чатов (только чтение)
+node tools/1forma.js messages 69145    # последние сообщения задачи/чата (только чтение)
+node tools/1forma.js form 60           # какие поля в форме создания (только чтение)
+node tools/1forma.js create 60 "Тип заявки=Основной (неделимый)" "Дата начала=08.12.2026"          # проверка без создания + снимок
+node tools/1forma.js create 60 "Тип заявки=..." ... --go   # ИЗМЕНЯЕТ: создать заявку
+node tools/1forma.js send 69145 "текст"                    # ИЗМЕНЯЕТ: написать в задачу/чат
+node tools/1forma.js reply 69145 1187157 "текст"           # ИЗМЕНЯЕТ: ответить на сообщение
 1F_LOGIN=... 1F_PASSWORD=... node tools/1forma.js login   # вход, пароль не сохраняется
 ```
 Нужен Playwright (в облачной сессии уже есть). Ставить `timezoneId: 'Asia/Dushanbe'`,
@@ -33,6 +40,11 @@ node tools/1forma.js questions-close   # ИЗМЕНЯЕТ: мои вопросы
 - «Исходящие» в ленте — мои вопросы, на которые не ответили (`myQuestionsCount`).
 - «Новые» в ленте — непрочитанные сообщения (`unreadCommentsCount`).
 
+## Как работать с поручениями владельца
+Просьба владельца в чате = команда. Делать сразу: `create`/`send` одной командой, без лишних уточнений.
+Если не хватает обязательного поля — спросить одним вопросом. После — сообщить номер заявки/ссылку.
+Даты в формах — дд.мм.гггг, часовой пояс Душанбе. Номера разделов — в `tools/1forma-map.md`.
+
 ## Найденные запросы API
 | Что | Запрос |
 |---|---|
@@ -44,7 +56,9 @@ node tools/1forma.js questions-close   # ИЗМЕНЯЕТ: мои вопросы
 | Настройки раздела | `GET /api/storage/subcategories/{id}` (поля, блоки, переходы) |
 | Статусы раздела | `GET /app/v1.0/api/subcategory/{id}/states` |
 | Маршрут задачи | `GET /app/v1.0/api/tasks/{id}/mainroute` |
-| Создать задачу | `POST /app/v1.1/api/tasks` (через форму надёжнее) |
+| Создать задачу | через форму: команда `create` (запрос `POST /app/v1.1/api/tasks`) |
+| Написать сообщение | `POST /api/comments/add` `{taskId, commentText, inReplyToCommentId?}` |
+| Список чатов | `GET /api/chats?limit=40&offset=0` |
 | Смена заказчика | `POST /api/tasks/change-owner` (в разделе 215 запрещено настройкой) |
 
 ## Ограничения
