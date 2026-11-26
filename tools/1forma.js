@@ -22,7 +22,9 @@ async function open() {
   if (fs.existsSync(STATE)) opts.storageState = STATE;
   const ctx = await browser.newContext(opts);
   const page = await ctx.newPage();
-  await page.goto(`${BASE}/spa/portal/7`, { waitUntil: 'networkidle', timeout: 60000 });
+  await page.goto(`${BASE}/app-settings.json`, { waitUntil: 'commit', timeout: 60000 });
+  const auth = await page.evaluate(async () => (await fetch('/api/auth/info')).status).catch(() => 0);
+  if (auth !== 200) await page.goto(`${BASE}/spa/entry/signin`, { waitUntil: 'commit' });
   return { browser, ctx, page };
 }
 
@@ -145,6 +147,31 @@ const COMMANDS = {
     for (const r of s.stateRouteInSubcats) console.log(`  ${name[r.stateID]} → ${name[r.stateNextID]}: «${r.stepDescr.trim()}»${r.hiddenStep ? ' (скрыт)' : ''}`);
     console.log(`Полей: ${s.extParams.length}, блоков: ${s.extParamBlocks.length}`);
   },
+};
+
+// ---------- Мои задачи (только чтение, все разделы параллельно) ----------
+COMMANDS.my = async (page) => {
+  const out = await page.evaluate(async () => {
+    const tree = (await (await fetch('/app/v1.0/api/subcategories/tree')).json()).data;
+    const subs = tree.filter((n) => n.nodeType === 'Subcategory' && !n.isDictionary);
+    const sel = ['task', 'state', 'dueDate', 'owner', 'performer', 'allPerformers'].map((f) => ({ field: f, type: f === 'dueDate' ? 'dateTimeValue' : f, extParamType: null }));
+    const body = { startRow: 0, endRow: 1000, rowGroupCols: [], valueCols: [], pivotCols: [], pivotMode: false, groupKeys: [], filterModel: {}, sortModel: [], select: sel, quickFilter: '', quickFilterAllColumns: false, myTasks: null, tasksState: null, smartExpressionIds: null, selectionId: null, context: null, aggregations: [], withAdvancedFilter: false };
+    const all = await Promise.all(subs.map(async (s) => {
+      try {
+        const j = await (await fetch(`/api-core/datasource/subcat/${s.id}/data`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+        return (j.tasksDataSourceResponse || []).map((t) => ({ ...t, sec: s.name.trim() }));
+      } catch { return []; }
+    }));
+    const me = 2340;
+    return all.flat().filter((t) => !t.isClosed).map((t) => {
+      const own = t.owner?.ownerId === me;
+      const perf = t.performer?.id === me || (t.allPerformersData || t.allPerformers || []).some?.((p) => (p.id ?? p.userId) === me);
+      if (!own && !perf) return null;
+      return { role: perf ? 'исполнитель' : 'заказчик', od: t.isOverdue, due: (t.dueDate || '').slice(0, 10), id: t.task.taskId, st: t.state.stateDescription.trim(), sec: t.sec, name: t.task.taskText, who: perf ? t.owner?.owner : t.performer?.name };
+    }).filter(Boolean);
+  });
+  out.sort((a, b) => a.role.localeCompare(b.role) || a.due.localeCompare(b.due));
+  for (const r of out) console.log(`${r.role}\t${r.od ? 'ПРОСРОЧ ' : ''}${r.due}\t${r.id}\t${r.st}\t${r.sec}\t${r.name}\t${r.who || ''}`);
 };
 
 // ---------- Чаты и комментарии ----------
